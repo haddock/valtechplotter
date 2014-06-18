@@ -37,7 +37,8 @@ Servo myservo;  // create servo object to control a servo
 int angle;
 int servoVal;   
 int change;
-
+int counter;
+char input[10];
 void setup()
 {
   Serial.begin(9600);
@@ -54,10 +55,38 @@ void setup()
     
   stepper2.setMaxSpeed(200.0);
   stepper2.setAcceleration(100.0);
+  counter = 0;
 }
 
 void loop()
 {
+    stepper1.run();
+    stepper2.run();
+   
+    
+    while(Serial.available()){
+      char n = Serial.read();
+      //Serial.println(n);
+      input[counter] = n;
+      counter++;
+    }
+    
+
+    //Serial.println(input);
+    
+    if(strcmp(input, "left") == 0) {
+      counter = 0;
+      strcpy(input, "");
+      //Serial.print("Moving left essaj!");
+      moveLeft(10);
+    }
+    
+    if(strcmp(input, "right") == 0){
+      strcpy(input, "");
+      counter = 0;
+      moveRight(10);
+    }
+    
     angle += change;
     if(angle > 254) {
       change = -1;
@@ -66,23 +95,15 @@ void loop()
       change = 1;
     }
     servoVal = map(angle, 0, 1023, 0, 255);    
-    myservo.write(servoVal);           
-    Serial.print("servo at");
-    Serial.println(servoVal);
+    //myservo.write(servoVal);
     // Change direction at the limits
-    if (stepper1.distanceToGo() == 0)
-	stepper1.moveTo(-stepper1.currentPosition());
-
-    if (stepper2.distanceToGo() == 0)
-	stepper2.moveTo(-stepper2.currentPosition());
-
-    stepper1.run();
-    stepper2.run();
-    
+ 
     
 }
 
 void moveLeft(int steps) { 
+  
+  Serial.print("Moving");
   stepper2.moveTo(stepper2.currentPosition() + steps);
   stepper1.moveTo(stepper1.currentPosition() - steps);
 }

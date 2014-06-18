@@ -15,9 +15,9 @@ sp = SerialPort.new(port_str, baud_rate, data_bits, stop_bits, parity)
 
 while true do
 	puts "Enter command to arduino"
-	input = gets.chomp
+	input = gets.chomp.strip()
+	#puts input
 	sp.write(input)
-	sleep 5
 end
 
 sp.close
